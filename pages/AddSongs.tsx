@@ -1,24 +1,88 @@
-import type { NextPage } from 'next'
 import Head from 'next/head'
 import NavBar from '../components/NavBar'
 import { MultiSelect } from "react-multi-select-component";
 import { useState } from 'react';
 import Link from 'next/link';
+import { firestore, serverTimestamp } from '../lib/firebase';
 
-const options = [
-    { label: "Lewis Cadaver", value: "Lewis Cadaver" },
-    { label: "The Weeknd", value: "The Weeknd" },
-    { label: "Kanye West", value: "Kanye West" },
-    { label: "Kendrick Lamar", value: "Kendrick Lamar" },
-    { label: "Lewisd Cadaver", value: "Ledwis Cadaver" },
-    { label: "The Weedknd", value: "The dWeeknd" },
-    { label: "Kanyde West", value: "Kanye Wedst" },
-    { label: "Kenddrick Lamar", value: "Kenddrick Lamar" },
-];
 
-const AddSongs: NextPage = () => { 
+interface Options {
+    label: string;
+    value: string;
+}
+
+export const getServerSideProps = async () => {
+    let options: Options[] = [];
+    try {
+        const snapshot = await firestore.collection('artists').get();
+        snapshot.forEach(doc => {
+            options.push({
+                label: doc.data().name,
+                value: doc.id
+            });
+        }
+        );
+
+    } catch (error) {
+        console.log(error);
+    }
+    return {
+        props: {
+            options
+        }
+    }
+}
+interface Artists {
+    label: string;
+}
+
+function listToString(list: Artists[]) {
+    let str = '';
+    list.forEach(artist => {
+        str += artist.label + ', ';
+    });
+    return str;
+}
+
+function AddSongs({ options }: { options: Options[] }) { 
     const [selected, setSelected] = useState([]);
-    
+    const [songName, setSongName] = useState('');
+    const [dateReleased, setDateReleased] = useState('');
+    // TODO: image artwork
+    const [artwork, setArtwork] = useState('');
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const songRef = firestore.collection('songs').doc();
+        songRef.set({
+            name: songName,
+            dateReleased: dateReleased,
+            artwork: artwork,
+            createdAt: serverTimestamp(),
+            artists: listToString(selected).substring(0, listToString(selected).length - 2)
+        });
+        setSongName('');
+        setDateReleased('');
+        setArtwork('');
+        setSelected([]);
+    }
+
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSongName(e.target.value);
+    }
+
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDateReleased(e.target.value);
+    }
+
+    const handleArtworkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setArtwork(e.target.value);
+    }
+
+    const handleSelectChange = (selected: []) => {
+        setSelected(selected);
+    }
+
     return (
         <>
             <NavBar />
@@ -39,25 +103,44 @@ const AddSongs: NextPage = () => {
                 </Head>
                 
                 
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className="flex w-full m-4">
                         <label className="w-1/2 block text-gray-700 text-2xl font-bold px-3 py-2">
                             Song Name
                         </label>
                         
-                        <input className="w-1/2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Name" required/>
+                        <input 
+                        className="w-1/2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="name" 
+                        type="text"
+                        value={songName}
+                        onChange={handleNameChange} 
+                        placeholder="Name" 
+                        required/>
                     </div>
                     <div className="flex w-full m-4">
                         <label className="w-1/2 block text-gray-700 text-2xl font-bold px-3 py-2">
                             Date Released
                         </label>
-                        <input className="w-1/2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" type="text" placeholder="Date Released" required/>
+                        <input 
+                        className="w-1/2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="date" 
+                        type="text"
+                        value={dateReleased}
+                        onChange={handleDateChange} 
+                        placeholder="Date Released" 
+                        required/>
                     </div>
                     <div className="flex w-full m-4">
                         <label className="w-1/2 block text-gray-700 text-2xl font-bold px-3 py-2">
                             Artwork
                         </label>
-                        <input className="w-1/2 shadow appearance-none border rounded py-2 px-3 bg-gray-400 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="image" type="file" /> 
+                        <input 
+                        className="w-1/2 shadow appearance-none border rounded py-2 px-3 bg-gray-400 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="image"
+                        value={artwork}
+                        onChange={handleArtworkChange}
+                        type="file" /> 
                     </div>
                     <div className="flex w-full m-4">
                         <label className="w-1/3 block text-gray-700 text-2xl font-bold px-3 py-2">

@@ -3,13 +3,13 @@ import Image from "next/image";
 function Cards( props: { 
     name: string,
     artist: string,
-    rate: string,
+    rate: number,
     cover: string,  
 } ) {
     return(
         <a className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600">
             <div className="py-3 px-2 w-full flex item-center justify-center">
-                <img className="w-20 h-20 rounded-full mr-4" src={props?.cover || "/vercel.svg"} alt=""/>
+                <img className="w-20 h-20 rounded-full mr-4" src={props?.cover || "/profile.jpg"} alt=""/>
             </div>        
             <div className="pb-4 w-full flex item-center justify-center">
             <div className="flex item-center justify-between">

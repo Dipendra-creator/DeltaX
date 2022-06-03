@@ -4,35 +4,39 @@ import Head from 'next/head'
 import NavBar from '../components/NavBar'
 import Cards from "../components/Cards";
 import Link from 'next/link';
+import { firestore, serverTimestamp } from '../lib/firebase';
 
-const Home: NextPage = () => {
-  const songsList = [
-    {
-      name: 'The Best of Me',
-      artist: 'The Weeknd',
-      rate: '4.5',
-      cover: 'https://online.berklee.edu/takenote/wp-content/uploads/2019/03/killerHooks-1920x1200.png',
-    },
-    {
-      name: 'The Hills',
-      artist: 'The Weeknd',
-      rate: '4.5',
-      cover: 'https://online.berklee.edu/takenote/wp-content/uploads/2019/03/killerHooks-1920x1200.png',
-    },
-    {
-      name: 'The Best of Me',
-      artist: 'The Weeknd',
-      rate: '4.5',
-      cover: 'https://online.berklee.edu/takenote/wp-content/uploads/2019/03/killerHooks-1920x1200.png',
-    },
-    {
-      name: 'The Hills',
-      artist: 'The Weeknd',
-      rate: '4.5',
-      cover: 'https://online.berklee.edu/takenote/wp-content/uploads/2019/03/killerHooks-1920x1200.png',
-    },
-  ]
+interface SongsList {
+    name: string;
+    artist: string;
+    rate: number;
+    cover: string;
+}
 
+export const getServerSideProps = async () => {
+    let songsList: SongsList[] = [];
+    try { 
+        const snapshot = await firestore.collection('songs').get();
+        snapshot.forEach(doc => {
+            songsList.push({
+                name: doc.data().name,
+                artist: doc.data().artists,
+                rate: 0,
+                cover: doc.data().artwork
+            });
+        });
+    } catch (error) {
+        console.log(error);
+    }
+    return {
+        props: {
+            songsList
+        }
+    }
+}
+
+function Home ({ songsList }: { songsList: SongsList[] }) {
+  console.log(songsList);
   return (
     <>
       <NavBar />
@@ -76,7 +80,7 @@ const Home: NextPage = () => {
               key={index}
               name={song.name}
               artist={song.artist}
-              rate={song.rate}
+              rate={song?.rate || 0}
               cover={song.cover}
             />
           ))}
@@ -104,7 +108,7 @@ const Home: NextPage = () => {
               key={index}
               name={song.name}
               artist={song.artist}
-              rate={song.rate}
+              rate={song?.rate || 0}
               cover={song.cover}
             />
           ))}
