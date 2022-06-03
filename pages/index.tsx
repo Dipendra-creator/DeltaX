@@ -1,6 +1,4 @@
-import type { NextPage } from 'next'
 import Head from 'next/head'
-// import Image from 'next/image'
 import NavBar from '../components/NavBar'
 import Cards from "../components/Cards";
 import Link from 'next/link';
@@ -129,7 +127,7 @@ function Home ({ songsList }: { songsList: SongsList[] }) {
       <footer className="mt-20 flex h-24 w-full items-center justify-center border-t">
         <a
           className="flex items-center justify-center gap-2 "
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+          href="https://github.com/Dipendra-creator/DeltaX"
           target="_blank"
           rel="noopener noreferrer"
         >

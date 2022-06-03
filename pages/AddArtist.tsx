@@ -6,10 +6,8 @@ import { firestore, serverTimestamp } from '../lib/firebase';
 import { useState } from 'react';
 
 const AddArtist: NextPage = () => { 
-
     const [artistName, setArtistName] = useState('');
     const [artistBio, setArtistBio] = useState('');
-    // dob is a date object
     const [artistDOB, setArtistDOB] = useState('');
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -117,7 +115,7 @@ const AddArtist: NextPage = () => {
                 <footer className="flex mt-20 h-24 w-full items-center justify-center border-t">
                     <a
                     className="flex items-center justify-center gap-2 "
-                    href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+                    href="https://github.com/Dipendra-creator/DeltaX"
                     target="_blank"
                     rel="noopener noreferrer"
                     >

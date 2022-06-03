@@ -4,8 +4,6 @@ import { MultiSelect } from "react-multi-select-component";
 import { useState } from 'react';
 import Link from 'next/link';
 import {STATE_CHANGED ,firestore, serverTimestamp, storage } from '../lib/firebase';
-import { randomInt } from 'crypto';
-
 
 interface Options {
     label: string;
@@ -193,7 +191,7 @@ function AddSongs({ options }: { options: Options[] }) {
                 <footer className="flex mt-20 h-24 w-full items-center justify-center border-t">
                     <a
                     className="flex items-center justify-center gap-2 "
-                    href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+                    href="https://github.com/Dipendra-creator/DeltaX"
                     target="_blank"
                     rel="noopener noreferrer"
                     >
