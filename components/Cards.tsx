@@ -28,10 +28,6 @@ function Cards( props: {
                         <p className="text-gray-600">{props.artist}</p>
                     </div>
                 </div>
-                
-                <div className="flex items-center">
-                    <Image src="/play.svg" alt="play Logo" width={25} height={25} />
-                </div>
             </div>
         </a>
     )

@@ -4,6 +4,7 @@ import { MultiSelect } from "react-multi-select-component";
 import { useState } from 'react';
 import Link from 'next/link';
 import {STATE_CHANGED ,firestore, serverTimestamp, storage } from '../lib/firebase';
+import { randomInt } from 'crypto';
 
 
 interface Options {
@@ -44,6 +45,10 @@ function listToString(list: Artists[]) {
     return str;
 }
 
+function randomNumber(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function AddSongs({ options }: { options: Options[] }) { 
     const [selected, setSelected] = useState([]);
     const [songName, setSongName] = useState('');
@@ -60,6 +65,7 @@ function AddSongs({ options }: { options: Options[] }) {
             name: songName,
             dateReleased: dateReleased,
             artwork: artworkAsUrl,
+            rate: randomNumber(1, 5),
             createdAt: serverTimestamp(),
             artists: listToString(selected).substring(0, listToString(selected).length - 2)
         });

@@ -11,6 +11,7 @@ interface SongsList {
     artist: string;
     rate: number;
     cover: string;
+    dateReleased: string
 }
 
 export const getServerSideProps = async () => {
@@ -21,8 +22,9 @@ export const getServerSideProps = async () => {
             songsList.push({
                 name: doc.data().name,
                 artist: doc.data().artists,
-                rate: 0,
-                cover: doc.data().artwork
+                rate: doc.data().rate,
+                cover: doc.data().artwork,
+                dateReleased: doc.data().dateReleased
             });
         });
     } catch (error) {
@@ -35,8 +37,17 @@ export const getServerSideProps = async () => {
     }
 }
 
+// time days count DD/MM/YYYY upto now
+function timeDiff(previous: string) {
+    const now = new Date();
+    const previousDate = new Date(previous);
+    const diff = now.getTime() - previousDate.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    return days;
+}
+
 function Home ({ songsList }: { songsList: SongsList[] }) {
-  console.log(songsList);
+  
   return (
     <>
       <NavBar />
@@ -75,7 +86,7 @@ function Home ({ songsList }: { songsList: SongsList[] }) {
 
         <div className="mt-6 flex max-w-8xl flex-wrap items-center justify-around sm:w-full">
           
-          {songsList.map((song, index) => (
+        {songsList.sort((a,b) => b.rate - a.rate ).map((song, index) => (
             <Cards
               key={index}
               name={song.name}
@@ -84,7 +95,6 @@ function Home ({ songsList }: { songsList: SongsList[] }) {
               cover={song.cover}
             />
           ))}
-          
         </div>
       </main>
 
@@ -103,8 +113,8 @@ function Home ({ songsList }: { songsList: SongsList[] }) {
 
         <div className=" flex max-w-8xl flex-wrap items-center justify-around sm:w-full">
           
-          {/* Show newly uploaded songs */}
-          {songsList.map((song, index) => (
+          {/* Show newly uploaded songs according to dateReleased 08/12/2021*/}
+          {songsList.sort((a,b) => timeDiff(b.dateReleased) - timeDiff(a.dateReleased) ).map((song, index) => (
             <Cards
               key={index}
               name={song.name}
@@ -113,7 +123,6 @@ function Home ({ songsList }: { songsList: SongsList[] }) {
               cover={song.cover}
             />
           ))}
-          
         </div>
       </main>
 
