@@ -103,6 +103,7 @@ function Home ({ songsList }: { songsList: SongsList[] }) {
 
         <div className=" flex max-w-8xl flex-wrap items-center justify-around sm:w-full">
           
+          {/* Show newly uploaded songs */}
           {songsList.map((song, index) => (
             <Cards
               key={index}

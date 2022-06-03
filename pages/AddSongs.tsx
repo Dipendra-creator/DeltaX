@@ -3,7 +3,7 @@ import NavBar from '../components/NavBar'
 import { MultiSelect } from "react-multi-select-component";
 import { useState } from 'react';
 import Link from 'next/link';
-import { firestore, serverTimestamp } from '../lib/firebase';
+import {STATE_CHANGED ,firestore, serverTimestamp, storage } from '../lib/firebase';
 
 
 interface Options {
@@ -49,24 +49,32 @@ function AddSongs({ options }: { options: Options[] }) {
     const [songName, setSongName] = useState('');
     const [dateReleased, setDateReleased] = useState('');
     // TODO: image artwork
-    const [artwork, setArtwork] = useState('');
+    const [artwork, setArtwork] = useState<File>();
+    const [artworkAsUrl, setArtworkAsUrl] = useState('');
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        alert(`${songName} was added to the database`);
         const songRef = firestore.collection('songs').doc();
         songRef.set({
             name: songName,
             dateReleased: dateReleased,
-            artwork: artwork,
+            artwork: artworkAsUrl,
             createdAt: serverTimestamp(),
             artists: listToString(selected).substring(0, listToString(selected).length - 2)
         });
         setSongName('');
         setDateReleased('');
-        setArtwork('');
+        setArtwork(undefined);
         setSelected([]);
     }
 
+    const uploadFile = async (file: any) => {
+        const fileRef = storage.ref(`images/${file.name}`);
+        const snapshot = await fileRef.put(file);
+        const url = await snapshot.ref.getDownloadURL();
+        return url;
+    }
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSongName(e.target.value);
     }
@@ -75,8 +83,12 @@ function AddSongs({ options }: { options: Options[] }) {
         setDateReleased(e.target.value);
     }
 
-    const handleArtworkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setArtwork(e.target.value);
+    const handleArtworkChange = (e: any) => {
+        setArtwork(e.target.files[0]);
+        uploadFile(e.target.files[0]).then(url => {
+            setArtworkAsUrl(url);
+        });
+        console.log(artworkAsUrl);
     }
 
     const handleSelectChange = (selected: []) => {
@@ -138,9 +150,9 @@ function AddSongs({ options }: { options: Options[] }) {
                         <input 
                         className="w-1/2 shadow appearance-none border rounded py-2 px-3 bg-gray-400 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                         id="image"
-                        value={artwork}
                         onChange={handleArtworkChange}
                         type="file" /> 
+
                     </div>
                     <div className="flex w-full m-4">
                         <label className="w-1/3 block text-gray-700 text-2xl font-bold px-3 py-2">
