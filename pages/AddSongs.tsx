@@ -144,7 +144,7 @@ function AddSongs({ options }: { options: Options[] }) {
                         type="text"
                         value={dateReleased}
                         onChange={handleDateChange} 
-                        placeholder="Date Released" 
+                        placeholder="DD/MM/YYYY" 
                         required/>
                     </div>
                     <div className="flex w-full m-4">
