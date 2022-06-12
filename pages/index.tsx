@@ -3,6 +3,7 @@ import NavBar from '../components/NavBar'
 import Cards from "../components/Cards";
 import Link from 'next/link';
 import { firestore, serverTimestamp } from '../lib/firebase';
+import {rate} from "../components/StarRating";
 
 interface SongsList {
     name: string;
@@ -14,7 +15,7 @@ interface SongsList {
 
 export const getServerSideProps = async () => {
     let songsList: SongsList[] = [];
-    try { 
+    try {
         const snapshot = await firestore.collection('songs').get();
         snapshot.forEach(doc => {
             songsList.push({
@@ -45,7 +46,7 @@ function timeDiff(previous: string) {
 }
 
 function Home ({ songsList }: { songsList: SongsList[] }) {
-  
+
   return (
     <>
       <NavBar />
@@ -69,13 +70,13 @@ function Home ({ songsList }: { songsList: SongsList[] }) {
         </div>
         <div>
           <Link href="/AddSongs">
-          <a className="flex py-2 px-3 bg-gray-700 items-center justify-center self-center text-white text-3xl rounded-xl">
+          <span className="flex py-2 px-3 bg-gray-700 items-center justify-center self-center text-white text-3xl rounded-xl">
             {/* Add Song + */}
             Add Songs
             <svg className="w-6 h-6 ml-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
               <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-          </a>
+          </span>
           </Link>
         </div>
       </div>
@@ -83,7 +84,7 @@ function Home ({ songsList }: { songsList: SongsList[] }) {
       <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
 
         <div className="mt-6 flex max-w-8xl flex-wrap items-center justify-around sm:w-full">
-          
+
         {songsList.sort((a,b) => b.rate - a.rate ).map((song, index) => (
             <Cards
               key={index}
@@ -100,9 +101,9 @@ function Home ({ songsList }: { songsList: SongsList[] }) {
         <div>
           <h1 className="text-3xl font-bold">
             New{' '}
-            <a className="text-blue-600">
+            <span className="text-blue-600">
               Songs
-            </a>
+            </span>
           </h1>
         </div>
       </div>
@@ -110,7 +111,7 @@ function Home ({ songsList }: { songsList: SongsList[] }) {
       <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
 
         <div className=" flex max-w-8xl flex-wrap items-center justify-around sm:w-full">
-          
+
           {/* Show newly uploaded songs according to dateReleased 08/12/2021*/}
           {songsList.sort((a,b) => timeDiff(b.dateReleased) - timeDiff(a.dateReleased) ).map((song, index) => (
             <Cards
@@ -132,14 +133,14 @@ function Home ({ songsList }: { songsList: SongsList[] }) {
           rel="noopener noreferrer"
         >
           Created by{' '}
-          <a className='text-blue-600'>
+          <span className='text-blue-600'>
             Dipendra Bhardwaj
-          </a>
+          </span>
         </a>
       </footer>
     </div>
     </>
-    
+
   )
 }
 
